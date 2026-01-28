@@ -1,9 +1,19 @@
 export default class Card {
-  constructor(data, cardSelector, openImgModal) {
-    this._name = data.title;
-    this._link = data.url;
+  constructor(
+    data,
+    cardSelector,
+    openImgModal,
+    handleDeleteClick,
+    handleLikeToggle,
+  ) {
+    this._name = data.title || data.name;
+    this._link = data.url || data.link;
     this._cardSelector = cardSelector;
     this._modalOpen = openImgModal;
+    this._id = data._id;
+    this._isLiked = Boolean(data.isLiked);
+    this._handleDeleteClick = handleDeleteClick;
+    this._handleLikeToggle = handleLikeToggle;
   }
 
   _setEventListeners() {
@@ -28,12 +38,22 @@ export default class Card {
   }
 
   _handleLikeIcon(evt) {
-    evt.target.classList.toggle("card__like-button_active");
+    if (this._handleLikeToggle) {
+      this._handleLikeToggle(this); // Call API handler
+    } else {
+      // Fallback to old behavior
+      evt.target.classList.toggle("card__like-button_active");
+    }
   }
 
   _handleDeleteCard() {
-    this._cardElement.remove();
-    this._cardElement = null;
+    if (this._handleDeleteClick) {
+      this._handleDeleteClick(this); // Show confirmation modal
+    } else {
+      // Fallback to old behavior
+      this._cardElement.remove();
+      this._cardElement = null;
+    }
   }
 
   _handleImageClick() {
@@ -55,5 +75,28 @@ export default class Card {
     this._cardImage.alt = this._name;
     this._setEventListeners();
     return this._cardElement;
+  }
+
+  setLiked(isLiked) {
+    this._isLiked = Boolean(isLiked);
+    const likeButton = this._cardElement.querySelector(".card__like-button");
+    if (likeButton) {
+      likeButton.classList.toggle("card__like-button_active", this._isLiked);
+    }
+  }
+
+  isLiked() {
+    return this._isLiked;
+  }
+
+  getId() {
+    return this._id;
+  }
+
+  remove() {
+    if (this._cardElement) {
+      this._cardElement.remove();
+      this._cardElement = null;
+    }
   }
 }
