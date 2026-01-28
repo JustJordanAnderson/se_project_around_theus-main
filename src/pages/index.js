@@ -68,6 +68,7 @@ formProfilePopup.setEventListeners();
 const imagePopup = new PopupWithImage("#view-image-modal");
 imagePopup.setEventListeners();
 
+// New Line of Code
 const renderCard = (data) => {
   const card = new Card(
     data,
@@ -98,8 +99,6 @@ const renderCard = (data) => {
   );
   return card.getView();
 };
-const cardGetView = card.getView();
-cardRendering.addItem(cardGetView);
 
 const editFormValidator = new FormValidator(
   validationSettings,
@@ -133,6 +132,7 @@ function handleProfileEditSubmit(data) {
     .catch((err) => console.error(err))
     .finally(() => formProfilePopup.renderLoading(false)); // hides loading
 }
+
 function handleAddCardFormSubmit(data) {
   formCardPopup.renderLoading(true); // Show loading
 
@@ -146,6 +146,22 @@ function handleAddCardFormSubmit(data) {
     .catch((err) => console.error(err))
     .finally(() => formCardPopup.renderLoading(false));
 }
+
+Promise.all([api.getUserInfo(), api.getInitialCards()])
+  .then(([user, cards]) => {
+    // Set user info
+    userInfo.setUserInfo({ name: user.name, description: user.about });
+
+    // Store user ID for later use
+    window.currentUserId = user._id;
+
+    // Render cards from server
+    cards.forEach((card) => {
+      const cardElement = renderCard(card);
+      cardRendering.addItem(cardElement);
+    });
+  })
+  .catch(console.error);
 /* -------------------------------------------------------------------------- */
 /*                               Event Listeners                              */
 /* -------------------------------------------------------------------------- */
