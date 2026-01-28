@@ -4,6 +4,10 @@ export default class Card {
     this._link = data.url;
     this._cardSelector = cardSelector;
     this._modalOpen = openImgModal;
+    this._id = data._id;
+    this._isLiked = Boolean(data.isLiked);
+    this._handleDeleteClick = handleDeleteClick;
+    this._handleLikeToggle = handleLikeToggle;
   }
 
   _setEventListeners() {
@@ -55,5 +59,27 @@ export default class Card {
     this._cardImage.alt = this._name;
     this._setEventListeners();
     return this._cardElement;
+  }
+  setLiked(isLiked) {
+    this._isLiked = Boolean(isLiked);
+    const likeButton = this._cardElement.querySelector(".card__like-button");
+    if (likeButton) {
+      likeButton.classList.toggle("card__like-button_active", this._isLiked);
+    }
+  }
+
+  isLiked() {
+    return this._isLiked;
+  }
+
+  getId() {
+    return this._id;
+  }
+
+  remove() {
+    if (this._cardElement) {
+      this._cardElement.remove();
+      this._cardElement = null;
+    }
   }
 }
